@@ -1,0 +1,61 @@
+<h1>Student CRUD Operation</h1>
+<h3 *ngIf="studentIdToUpdate; else create"> 
+   Update Student for Id: {{studentIdToUpdate}}
+</h3>
+<ng-template #create>
+   <h3> Create New Student </h3>
+</ng-template>
+<div>
+ <form [formGroup]="studentForm" (ngSubmit)="onStudentFormSubmit()">
+  <table>
+    <tr><td>Enter Student Name</td><td><input formControlName="studentname">
+	       <label *ngIf="studentForm.get('studentname').invalid && processValidation" [ngClass] = "'error'"> Student Name is required. </label>
+   	</td></tr>
+    <tr><td>Enter Degree</td><td><input formControlName="degree">
+	       <label *ngIf="studentForm.get('degree').invalid && processValidation" [ngClass] = "'error'"> Degree is required. </label>
+	</td></tr>	
+  <tr><td>Enter Major</td><td><input formControlName="major">
+         <label *ngIf="studentForm.get('major').invalid && processValidation" [ngClass] = "'error'"> Major is required. </label>
+  </td></tr>
+  <tr><td>Enter courses</td><td><select multiple formControlName="courseids" ngModel>
+          <option *ngFor="let course of courses" value={{course.id}}>{{course.coursename}}</option>
+          </select>
+  </td></tr>
+    <tr><td colspan="2">
+	    <button *ngIf="!studentIdToUpdate">CREATE</button>  
+		<button *ngIf="studentIdToUpdate">UPDATE</button>  
+	    <button (click)="backToCreateStudent()" *ngIf="studentIdToUpdate">Go Back</button>  
+	</td></tr>
+  </table>
+ </form> 
+ <br/>
+ <div *ngIf="statusCode; else processing">
+   <div *ngIf="statusCode === 201" [ngClass] = "'success'">
+	    Student added successfully.
+   </div>   
+   <div *ngIf="statusCode === 409" [ngClass] = "'success'">
+        Student already exists.
+   </div>   	
+   <div *ngIf="statusCode === 200" [ngClass] = "'success'">
+        Student updated successfully.
+   </div>   	      
+   <div *ngIf="statusCode === 204" [ngClass] = "'success'">
+        Student deleted successfully.
+   </div>   	   
+   <div *ngIf="statusCode === 500" [ngClass] = "'error'">
+        Internal Server Error.
+   </div>   	
+ </div>
+ <ng-template #processing>
+	<img *ngIf="requestProcessing" src="assets/images/loading.gif">
+ </ng-template>
+</div>
+<h3>Student Details</h3>
+<table>
+  <tr><th> Id</th> <th>Student Name</th><th>Degree</th><th>Major</th><th>Courses</th>
+  <tr *ngFor="let student of allStudents" >
+    <td>{{student.studentId}}</td><td>{{student.studentname}}</td> <td>{{student.degree}}</td> <td>{{student.major}}</td> <td>{{student.courseids}}</td>
+	<td><button type="button" (click)="loadStudentToEdit(student.studentId)">Edit</button> </td> 
+	<td><button type="button" (click)="deleteStudent(student.studentId)">Delete</button></td>
+  </tr>
+</table>
